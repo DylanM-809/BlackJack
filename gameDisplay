@@ -1,44 +1,4 @@
-// Project display cards.cpp : This file contains the 'main' function. Program execution begins and ends there.
-//
 
-#include <iostream>
-#include <string.h>
-using namespace std;
-int handSize = 2;
-int main()
-{
-    
-    int userChips = 0;
-    string baseCard[7][9] = {
-        {"_", "-", "-","-","-","-","-","-", "_"},
-        {"|", " ", " ", " ", " ", " ", " ", " ", "|"},
-        { "|", " ", " ", " ", " ", " ", " ", " ", "|" },
-        { "|", " ", " ", " ", " ", " ", " ", " ", "|" },
-        { "|", " ", " ", " ", " ", " ", " ", " ", "|" },
-        { "|", " ", " ", " ", " ", " ", " ", " ", "|" },
-        { "|", "_", "_", "_", "_", "_", "_", "_", "|" },
-    };
-
-
-
-
-
-
-
-    cout << "Chips: " << userChips << endl;
-    for (int o = 0; o < handSize; o++)
-    {
-        for (int i = 0; i < 9; i++)
-        {
-            for (int j = 0; j < 9; j++)
-            {
-                cout << baseCard[i][j];
-            }
-         
-            cout << endl;
-        }
-    }
-}
 // Project display cards.cpp : This file contains the 'main' function. Program execution begins and ends there.
 //
 
