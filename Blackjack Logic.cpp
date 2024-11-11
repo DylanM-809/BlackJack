@@ -53,7 +53,7 @@ int main()
             srand(time(NULL));
 
             cout << "Chipstack amount: " << chipStack << endl;
-            cout << "Place a bet (1) (5) (10) (50) (100): ";
+            cout << "Place a bet (1) (5) (10) (50) (100): "; // Display for chips (TEMP)
             cin >> playerBet;
             cin.ignore();
             cout << endl;
@@ -78,9 +78,9 @@ int main()
 
             cout << "Value of dealer's hand: " << dealerSum << "\n\n";
 
-            bool winner = false; // Temp bool for testing
+            bool winner = false; // Bool for testing (TEMP)
             int turnCounter = 1;
-            while (!winner) // Loop for player choice each turn
+            while (!winner) // Loop for player choice each turn (TEMP)
             {
                 string playerChoice;
                 playerSum = sum(playerHand, playerSize);
@@ -110,14 +110,14 @@ int main()
                     playerSum = sum(playerHand, playerSize); // Increase sum each draw
                     cout << "Value of your hand: " << playerSum << "\n\n"; // Temp value display
 
-                    if (bust(playerSum, dealerSum, chipStack, playerBet))
+                    if (bust(playerSum, dealerSum, chipStack, playerBet)) // Checks for player bust
                     {
                         break;
                     }
 
                     dealerCpu(dealerHand, dealerSize, dealerSum);
 
-                    if (bust(playerSum, dealerSum, chipStack, playerBet))
+                    if (bust(playerSum, dealerSum, chipStack, playerBet))  // Checks for dealer bust
                     {
                         break;
                     }
@@ -135,7 +135,7 @@ int main()
                     playerSum = sum(playerHand, playerSize); // Display sum each draw
                     cout << "Value of your hand: " << playerSum << "\n\n"; // Temp value display
 
-                    if (bust(playerSum, dealerSum, chipStack, playerBet))
+                    if (bust(playerSum, dealerSum, chipStack, playerBet)) // Checks for player bust
                     {
                         break;
                     }
@@ -144,7 +144,7 @@ int main()
                 {
                     dealerCpu(dealerHand, dealerSize, dealerSum);
 
-                    if (bust(playerSum, dealerSum, chipStack, playerBet))
+                    if (bust(playerSum, dealerSum, chipStack, playerBet)) // Checks for dealer bust
                     {
                         break;
                     }
