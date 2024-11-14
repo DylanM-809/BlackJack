@@ -24,12 +24,12 @@ const string cardDeck[ARRAY_SIZE] = {
 
 int cardValue(string);
 int sum(string[], int);
-void winningHand(int, int, int&, int);
 void cardDraw(string[], int&);
-bool splitCheck(string[]);
-bool bust(int, int, int&, int&);
 void dealerCpu(string[], int&, int&);
-
+void playerCpu(string[], int&, int&);
+void winningHand(int, int, int&, int);
+bool bust(int, int, int&, int);
+//bool splitCheck(string[]); NOT COMPLETE
 
 
 int main()
@@ -53,71 +53,48 @@ int main()
             srand(time(NULL));
 
             cout << "Chipstack amount: " << chipStack << endl;
-            cout << "Place a bet (1) (5) (10) (50) (100): "; // Display for chips (TEMP)
+            cout << "Place a bet (1) (5) (10) (50) (100): ";
             cin >> playerBet;
             cin.ignore();
             cout << endl;
 
-            for (int i = 0; i < 2; i++) // Player draws two intial cards
-            {
-                cardDraw(playerHand, playerSize);
-                cout << "Player card " << i + 1 << ": " << playerHand[i] << endl;
-            }
+            //Player initlaly draws two cards
+            playerCpu(playerHand, playerSize, playerSum);
 
-            playerSum = sum(playerHand, playerSize);
+            //Dealer intially draws one card
+            dealerCpu(dealerHand, dealerSize, dealerSum);
 
-            cout << "Value of your hand: " << playerSum << "\n\n";
-
-            for (int i = 0; i < 1; i++)  // Dealer draws one intial card
-            {
-                cardDraw(dealerHand, dealerSize);
-                cout << "Dealer card " << i + 1 << ": " << dealerHand[i] << endl;
-            }
-
-            dealerSum = sum(dealerHand, dealerSize);
-
-            cout << "Value of dealer's hand: " << dealerSum << "\n\n";
-
-            bool winner = false; // Bool for testing (TEMP)
-            int turnCounter = 1;
-            while (!winner) // Loop for player choice each turn (TEMP)
+            bool winner = false; // Temp bool for testing
+            bool firstTurn = true;
+            while (!winner) // Loop for player choice each turn
             {
                 string playerChoice;
-                playerSum = sum(playerHand, playerSize);
 
                 cout << "[Hit][Stand]";
 
-                if (splitCheck(playerHand)) // Display split option if possible (NOT FINISHED)
-                {
-                    cout << "[Split]";
-                }
-
-                if (turnCounter == 1) // Display double option only on the first turn
+                if (firstTurn) // Display double option only on the first turn
                 {
                     cout << "[Double]";
-                    turnCounter++;
+                    firstTurn = false;
                 }
 
                 cout << endl;
                 getline(cin, playerChoice);
+                cout << endl;
 
                 if (playerChoice == "Double" || playerChoice == "double")
                 {
                     playerBet *= 2;
+                    playerCpu(playerHand, playerSize, playerSum); // Player draws only one card
 
-                    cardDraw(playerHand, playerSize);
-                    cout << "Player card " << playerSize << ": " << playerHand[playerSize - 1] << endl; // Temp hand display
-                    playerSum = sum(playerHand, playerSize); // Increase sum each draw
-                    cout << "Value of your hand: " << playerSum << "\n\n"; // Temp value display
-
-                    if (bust(playerSum, dealerSum, chipStack, playerBet)) // Checks for player bust
+                    if (bust(playerSum, dealerSum, chipStack, playerBet)) // End game if player busts
                     {
                         break;
                     }
 
-                    dealerCpu(dealerHand, dealerSize, dealerSum);
+                    dealerCpu(dealerHand, dealerSize, dealerSum); // Dealer draw phase
 
-                    if (bust(playerSum, dealerSum, chipStack, playerBet))  // Checks for dealer bust
+                    if (bust(playerSum, dealerSum, chipStack, playerBet)) // End game if dealer busts
                     {
                         break;
                     }
@@ -126,25 +103,21 @@ int main()
                         winningHand(playerSum, dealerSum, chipStack, playerBet); // Determine the winner
                         break;
                     }
-
                 }
                 else if (playerChoice == "Hit" || playerChoice == "hit")
                 {
-                    cardDraw(playerHand, playerSize);
-                    cout << "Player card " << playerSize << ": " << playerHand[playerSize - 1] << endl; // Temp hand display
-                    playerSum = sum(playerHand, playerSize); // Display sum each draw
-                    cout << "Value of your hand: " << playerSum << "\n\n"; // Temp value display
+                    playerCpu(playerHand, playerSize, playerSum); // Player draws once
 
-                    if (bust(playerSum, dealerSum, chipStack, playerBet)) // Checks for player bust
+                    if (bust(playerSum, dealerSum, chipStack, playerBet)) // End game if player busts
                     {
                         break;
                     }
                 }
                 else if (playerChoice == "Stand" || playerChoice == "stand")
                 {
-                    dealerCpu(dealerHand, dealerSize, dealerSum);
+                    dealerCpu(dealerHand, dealerSize, dealerSum); // Dealer draw phase
 
-                    if (bust(playerSum, dealerSum, chipStack, playerBet)) // Checks for dealer bust
+                    if (bust(playerSum, dealerSum, chipStack, playerBet)) // End game if dealer busts
                     {
                         break;
                     }
@@ -158,6 +131,7 @@ int main()
         }
     }
 }
+
 
 //******************************************************************
 // Definition of function cardDraw.
@@ -264,6 +238,94 @@ void winningHand(int playerSum, int dealerSum, int& chipStack, int playerBet)
 }
 
 //******************************************************************
+// Definition of function bust.
+// Uses parameters to check if total hand value is a bust.
+//******************************************************************
+bool bust(int playerSum, int dealerSum, int& chipStack, int playerBet)
+{
+
+    if (dealerSum > 21)
+    {
+        cout << "Dealer Bust. You win!" << endl;
+        chipStack += playerBet;
+        return true;
+    }
+    else if (playerSum > 21)
+    {
+        cout << "Bust! You lose." << endl;
+        chipStack -= playerBet;
+        return true;
+    }
+    else
+        return false;
+}
+
+//******************************************************************
+// Definition of function dealerCpu.
+// Uses parameters to automate dealers drawing phases.
+//******************************************************************
+void dealerCpu(string dealerHand[], int& dealerSize, int& dealerSum)
+{
+    if (dealerSize == 0) // If dealer hasn't drawn before
+    {
+        cardDraw(dealerHand, dealerSize);
+        dealerSum = sum(dealerHand, dealerSize);
+
+        //Temp Dealer Display
+        cout << "Dealer card " << dealerSize << ": " << dealerHand[dealerSize - 1] << endl;
+        cout << "Value of dealer's hand: " << dealerSum << "\n\n";
+        return;
+    }
+
+    while (dealerSum < 17)
+    {
+        cardDraw(dealerHand, dealerSize);
+        dealerSum = sum(dealerHand, dealerSize);
+
+        // Temp Dealer Display
+        cout << "Dealer card " << dealerSize << ": " << dealerHand[dealerSize - 1] << endl;
+        cout << "Value of dealer's hand: " << dealerSum << "\n\n";
+    }
+    return;
+}
+
+//******************************************************************
+// Definition of function playerCPU.
+// Uses parameters to automate player drawing phases.
+//******************************************************************
+void playerCpu(string playerHand[], int& playerSize, int& playerSum)
+{
+    if (playerSize == 0) // If player hasn't drawn before
+    {
+        for (int i = 0; i < 2; i++) // Player draws two intial cards
+        {
+            cardDraw(playerHand, playerSize);
+
+            //Temp Player Display
+            cout << "Player card " << i + 1 << ": " << playerHand[i] << endl;
+        }
+        playerSum = sum(playerHand, playerSize);
+
+        //Temp Player Display
+        cout << "Value of your hand: " << playerSum << "\n\n";
+
+        return;
+    }
+    else
+    {
+        cardDraw(playerHand, playerSize);
+        playerSum = sum(playerHand, playerSize);
+
+        //Temp Player Display
+        cout << "Player card " << playerSize << ": " << playerHand[playerSize - 1] << endl;
+        cout << "Value of your hand: " << playerSum << "\n\n";
+
+        return;
+    }
+}
+
+/*
+//******************************************************************
 // Definition of function splitCheck.
 // Uses parameters to check if player can split
 //******************************************************************
@@ -278,46 +340,5 @@ bool splitCheck(string hand[])
     }
     else
         return false;
-}
+} */ //NOT COMPLETE
 
-//******************************************************************
-// Definition of function bust.
-// Uses parameters to check if total hand value is a bust.
-//******************************************************************
-bool bust(int playerSum, int dealerSum, int& chipStack, int& playerBet)
-{
-    if (playerSum <= 21)
-    {
-        if (dealerSum > 21)
-        {
-            chipStack += playerBet;
-            cout << "Dealer Bust. You win!" << endl;
-            return true;
-        }
-        else
-            return false;
-    }
-    else if (playerSum > 21)
-    {
-        chipStack -= playerBet;
-        cout << "Bust! You lose." << endl;
-        return true;
-    }
-    else
-        return false;
-}
-
-//******************************************************************
-// Definition of function bust.
-// Uses parameters to automate dealers drawing phase.
-//******************************************************************
-void dealerCpu(string dealerHand[], int& dealerSize, int& dealerSum)
-{
-    while (dealerSum < 17)
-    {
-        cardDraw(dealerHand, dealerSize);
-        cout << "Dealer card " << dealerSize << ": " << dealerHand[dealerSize - 1] << endl; // Temp hand display
-        dealerSum = sum(dealerHand, dealerSize); // Display sum each draw
-        cout << "Value of dealer's hand: " << dealerSum << "\n\n"; // Temp value display
-    }
-}
