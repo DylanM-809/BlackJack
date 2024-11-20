@@ -25,8 +25,8 @@ const string cardDeck[ARRAY_SIZE] = {
 "spadeKing",  "diamondKing",  "heartKing",  "clubKing" };	// (48, 49, 50, 51)
 //Skyler functions
 char getSuit(int, vector<string>&);
-char getCardValue(int, vector<string>&, char&);
-void displayCards(vector<string>&, vector<string>&);
+string getCardValue(int, vector<string>&, char&);
+void displayCards(vector<string>&, vector<string>&, int&);
 //
 int cardValue(string);
 int sum(vector<string>&);
@@ -66,7 +66,7 @@ int main()
             //Dealer intially draws one card
             dealerCpu(dealerHand);
             //skyler display card call added
-            displayCards(playerHand, dealerHand);
+            displayCards(playerHand, dealerHand, chipStack);
             bool winner = false; // Temp bool for testing
             bool firstTurn = true;
             while (!winner) // Loop for player choice each turn
@@ -80,7 +80,7 @@ int main()
                     playerBet *= 2;
                     playerCpu(playerHand); // Player draws only one card
                     //skyler display card call added
-                    displayCards(playerHand, dealerHand);
+                    displayCards(playerHand, dealerHand, chipStack);
                     if (bust(playerHand, dealerHand, chipStack, playerBet)) // End game if player busts
                     {
                         break;
@@ -88,7 +88,7 @@ int main()
 
                     dealerCpu(dealerHand); // Dealer draw phase
                     //skyler display card call added
-                    displayCards(playerHand, dealerHand);
+                    displayCards(playerHand, dealerHand, chipStack);
                     if (bust(playerHand, dealerHand, chipStack, playerBet)) // End game if dealer busts
                     {
                         break;
@@ -103,7 +103,7 @@ int main()
                 {
                     playerCpu(playerHand); // Player draws once
                     //skyler display card call added
-                    displayCards(playerHand, dealerHand);
+                    displayCards(playerHand, dealerHand, chipStack);
                     if (bust(playerHand, dealerHand, chipStack, playerBet)) // End game if player busts
                     {
                         break;
@@ -113,7 +113,7 @@ int main()
                 {
                     dealerCpu(dealerHand); // Dealer draw phase
                     //skyler display card call added
-                    displayCards(playerHand, dealerHand);
+                    displayCards(playerHand, dealerHand, chipStack);
                     if (bust(playerHand, dealerHand, chipStack, playerBet)) // End game if dealer busts
                     {
                         break;
@@ -333,8 +333,8 @@ void dealerCpu(vector<string>& dealerHand)
         cardDraw(dealerHand);
 
         //Temp Dealer Display
-        cout << "Dealer card " << size(dealerHand) << ": " << dealerHand[size(dealerHand) - 1] << endl;
-        cout << "Value of dealer's hand: " << sum(dealerHand) << "\n\n";
+        //cout << "Dealer card " << size(dealerHand) << ": " << dealerHand[size(dealerHand) - 1] << endl;
+        //cout << "Value of dealer's hand: " << sum(dealerHand) << "\n\n";
         return;
     }
 
@@ -343,8 +343,8 @@ void dealerCpu(vector<string>& dealerHand)
         cardDraw(dealerHand);
 
         // Temp Dealer Display
-        cout << "Dealer card " << size(dealerHand) << ": " << dealerHand[size(dealerHand) - 1] << endl;
-        cout << "Value of dealer's hand: " << sum(dealerHand) << "\n\n";
+        //cout << "Dealer card " << size(dealerHand) << ": " << dealerHand[size(dealerHand) - 1] << endl;
+        //cout << "Value of dealer's hand: " << sum(dealerHand) << "\n\n";
     }
     return;
 }
@@ -362,11 +362,11 @@ void playerCpu(vector<string>& playerHand)
             cardDraw(playerHand);
 
             //Temp Player Display
-            cout << "Player card " << i + 1 << ": " << playerHand[size(playerHand) - 1] << endl;
+           // cout << "Player card " << i + 1 << ": " << playerHand[size(playerHand) - 1] << endl;
         }
 
         //Temp Player Display
-        cout << "Value of your hand: " << sum(playerHand) << "\n\n";
+        //cout << "Value of your hand: " << sum(playerHand) << "\n\n";
 
         return;
     }
@@ -375,8 +375,8 @@ void playerCpu(vector<string>& playerHand)
         cardDraw(playerHand);
 
         //Temp Player Display
-        cout << "Player card " << size(playerHand) << ": " << playerHand[size(playerHand) - 1] << endl;
-        cout << "Value of your hand: " << sum(playerHand) << "\n\n";
+        //cout << "Player card " << size(playerHand) << ": " << playerHand[size(playerHand) - 1] << endl;
+        //cout << "Value of your hand: " << sum(playerHand) << "\n\n";
 
         return;
     }
@@ -400,11 +400,10 @@ bool splitCheck(vector<string>& hand)
         return false;
     }
 }
-    void displayCards(vector<string>&playerHand, vector<string>&pcHand) 
+    void displayCards(vector<string>&playerHand, vector<string>&pcHand, int& chips) 
     {
-        bool handOver = false;
         char suit = '0';
-        int cardValue = 0;
+        string cardValue = " ";
         int currentCard = 0;
         int currentCardValue = 0;
         int userChips = 0;
@@ -422,8 +421,8 @@ bool splitCheck(vector<string>& hand)
 
 
         //prints Pc hand, number of cards based on pcHand var
-        cout << "Chips: " << userChips << endl;
-        cout << "Opponents hand" << endl;
+        cout << "Chips: " << chips << endl;
+        cout << "Opponents hand value: " << sum(pcHand) << endl;
         for (int i = 0; i < 7; i++)
         {
             for (int h = 0; h < pcHand.size(); h++)
@@ -437,7 +436,7 @@ bool splitCheck(vector<string>& hand)
                         switch (suit)
                         {
                         case('h'):
-                            cout << "| heart";
+                            cout << " heart";
                             currentCard++;
                             j = 6;
                             break;
@@ -449,10 +448,10 @@ bool splitCheck(vector<string>& hand)
                         case('d'):
                             cout << "diamond";
                             currentCard++;
-                            j = 8;
+                            j = 7;
                             break;
                         case('c'):
-                            cout << "club";
+                            cout << " club";
                             currentCard++;
                             j = 5;
                             break;
@@ -466,7 +465,7 @@ bool splitCheck(vector<string>& hand)
                         suit = getSuit(currentCardValue, pcHand);
                         cardValue = getCardValue(currentCardValue, pcHand, suit);
                         currentCardValue++;
-                        cout << static_cast<char>(cardValue);
+                        cout << (cardValue);
                         j = 6;
                     }
 
@@ -478,7 +477,7 @@ bool splitCheck(vector<string>& hand)
         cout << "\n\n\n";
         //reset var for player hand
         suit = '0';
-        cardValue = 0;
+        cardValue = " ";
         currentCard = 0;
         currentCardValue = 0;
         //prints players hand number of cards based on playerHand var
@@ -508,10 +507,10 @@ bool splitCheck(vector<string>& hand)
                         case('d'):
                             cout << "diamond";
                             currentCard++;
-                            j = 8;
+                            j = 7;
                             break;
                         case('c'):
-                            cout << "club";
+                            cout << " club";
                             currentCard++;
                             j = 5;
                             break;
@@ -525,7 +524,7 @@ bool splitCheck(vector<string>& hand)
                         suit = getSuit(currentCardValue, playerHand);
                         cardValue = getCardValue(currentCardValue, playerHand, suit);
                         currentCardValue++;
-                        cout << static_cast<char>(cardValue);
+                        cout << (cardValue);
                         j = 6;
                     }
 
@@ -533,7 +532,8 @@ bool splitCheck(vector<string>& hand)
             }
             cout << endl;
         }
-    }
+        cout << "Value of your hand: " << sum(playerHand) << endl;
+}
 
     char getSuit(int cardIndex, vector<string>& hand)
     {
@@ -543,9 +543,9 @@ bool splitCheck(vector<string>& hand)
         return suit;  
     }
 
-    char getCardValue(int cardIndex, vector<string>& hand, char& suit)
+    string getCardValue(int cardIndex, vector<string>& hand, char& suit)
     {
-        char cardValue = ' ';
+        string cardValue = " ";
         char value = ' ';
         int k = 0;
         //cout << "suit test " << suit;
@@ -554,16 +554,40 @@ bool splitCheck(vector<string>& hand)
         switch (suit)
         {
         case('d'):
-            cardValue = hand[cardIndex][7];
+            if (hand[cardIndex][7] == '1')
+            {
+                cardValue = '10';
+            }
+            else {
+                cardValue = hand[cardIndex][7];
+            }
             break;
         case('c'):
-            cardValue = hand[cardIndex][4];
+            if (hand[cardIndex][4] == '1')
+            {
+                cardValue = '10';
+            }
+            else {
+                cardValue = hand[cardIndex][4];
+            }
             break;
         case('h'):
-            cardValue = hand[cardIndex][5];
+            if (hand[cardIndex][5] == '1')
+            {
+                cardValue = '10';
+            }
+            else {
+                cardValue = hand[cardIndex][5];
+            }
             break;
         case('s'):
-            cardValue = hand[cardIndex][5];
+            if (hand[cardIndex][5] == '1')
+            {
+                cardValue = '10';
+            }
+            else {
+                cardValue = hand[cardIndex][5];
+            }
             break;
         }
         //cout << " cardvalue test " << cardValue << endl;
@@ -573,4 +597,3 @@ bool splitCheck(vector<string>& hand)
         return cardValue;
     }
     
-
