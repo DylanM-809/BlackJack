@@ -400,6 +400,7 @@ bool splitCheck(vector<string>& hand)
         return false;
     }
 }
+    //prints the value and suit of player and dealers hands. updates the display when a card is drawn. also prints each hands total value and amount of chips.
     void displayCards(vector<string>&playerHand, vector<string>&pcHand, int& chips) 
     {
         char suit = '0';
@@ -420,18 +421,20 @@ bool splitCheck(vector<string>& hand)
 
 
 
-        //prints Pc hand, number of cards based on pcHand var
+        //prints Pc hand, number of cards based on pcHand var. stop at predetermind points in the baseCard template to insert cards suit and value.
         cout << "\n\n\n\n\n\n" << "Chips: " << chips << endl;
         cout << "Opponents hand value: " << sum(pcHand) << endl;
         for (int i = 0; i < 7; i++)
         {
             for (int h = 0; h < pcHand.size(); h++)
             {
-                //removed code snippet 1
                 for (int j = 0; j < 9; j++)
                 {
                     if (i == 3 && j == 1)
                     {
+                        //currentCard is a counting var to keep track of what card we are printing. getSuit copies the first letter of the card string
+                        // to find suit. prints the suit in the middle of the card and sets the loop var to skip the spaces used for suit. 
+                        
                         suit = getSuit(currentCard, pcHand);
                         switch (suit)
                         {
@@ -458,15 +461,28 @@ bool splitCheck(vector<string>& hand)
                         }
 
                     }
+                    //if not the spots for suit or value it prints the baseCard templet as is.
                     else {
                         cout << baseCard[i][j];
                     }
+                    //stops code at bottom left of card to add card value
                     if (i == 5 && j == 5) {
+                        //cards are stored like this "heartAce" so each suits card value is a different amount of letters after the suit.
+                        //so i need to call my suit function to send to the value function to allow it to grab only the card value from the string.
                         suit = getSuit(currentCardValue, pcHand);
                         cardValue = getCardValue(currentCardValue, pcHand, suit);
+                        // counting var to keep track of what card we are looping so it can convert the cards value correctly.
                         currentCardValue++;
-                        cout << (cardValue);
-                        j = 6;
+                        //print formatting for 10 cards to fit in card template
+                        if (cardValue == "10")
+                        {
+                            cout << (cardValue);
+                        }
+                        else
+                        {
+                            cout << (cardValue) << " ";
+                        }
+                        j = 7;
                     }
 
                 }
@@ -480,13 +496,13 @@ bool splitCheck(vector<string>& hand)
         cardValue = " ";
         currentCard = 0;
         currentCardValue = 0;
-        //prints players hand number of cards based on playerHand var
+        //prints players hand number of cards based on playerHand var. does the same as the other half just for the player hand.
         cout << "Players hand" << endl;
         for (int i = 0; i < 7; i++)
         {
             for (int h = 0; h < playerHand.size(); h++)
             {
-                //removed code snippet 1
+                
                 for (int j = 0; j < 9; j++)
                 {
                     if (i == 3 && j == 1)
@@ -524,22 +540,31 @@ bool splitCheck(vector<string>& hand)
                         suit = getSuit(currentCardValue, playerHand);
                         cardValue = getCardValue(currentCardValue, playerHand, suit);
                         currentCardValue++;
-                        cout << (cardValue);
-                        j = 6;
+                        //print formatting for 10 cards to fit in card template
+                        if (cardValue == "10")
+                        {
+                            cout << (cardValue);
+                        }
+                        else
+                        {
+                            cout << (cardValue) << " ";
+                        }
+                        j = 7;
                     }
 
                 }
             }
             cout << endl;
         }
+        //prints cards in hands value for player.
         cout << "Value of your hand: " << sum(playerHand) << endl;
 }
 
     char getSuit(int cardIndex, vector<string>& hand)
     {
+        //cards are stored in string vector like "spadeAce" this takes the first letter and returns it to identify suit.
         char suit = hand[cardIndex][0];
 
-        //cout << suit;
         return suit;  
     }
 
@@ -548,15 +573,14 @@ bool splitCheck(vector<string>& hand)
         string cardValue = " ";
         char value = ' ';
         int k = 0;
-        //cout << "suit test " << suit;
-        //code snippet 2 removed
-
+        //cards are stored in string vector like "spadeAce" this takes the suit to know what index to start for the value and takes the first char of
+        // the value in a var. if the char taken is a 1 then the value is 10 and the if statement adds the 0.
         switch (suit)
         {
         case('d'):
             if (hand[cardIndex][7] == '1')
             {
-                cardValue = '10';
+                cardValue = "10";
             }
             else {
                 cardValue = hand[cardIndex][7];
@@ -565,7 +589,7 @@ bool splitCheck(vector<string>& hand)
         case('c'):
             if (hand[cardIndex][4] == '1')
             {
-                cardValue = '10';
+               cardValue = "10";
             }
             else {
                 cardValue = hand[cardIndex][4];
@@ -574,7 +598,7 @@ bool splitCheck(vector<string>& hand)
         case('h'):
             if (hand[cardIndex][5] == '1')
             {
-                cardValue = '10';
+                cardValue = "10";
             }
             else {
                 cardValue = hand[cardIndex][5];
@@ -583,7 +607,7 @@ bool splitCheck(vector<string>& hand)
         case('s'):
             if (hand[cardIndex][5] == '1')
             {
-                cardValue = '10';
+                cardValue = "10";
             }
             else {
                 cardValue = hand[cardIndex][5];
