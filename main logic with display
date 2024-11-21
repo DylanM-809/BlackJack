@@ -154,7 +154,8 @@ string turnOptions(vector<string>& playerHand, bool& firstTurn)
     cout << "\nYour choice: ";
     getline(cin, playerChoice);
 
-    while (playerChoice != "Double" && playerChoice != "Hit" && playerChoice != "Stand" && playerChoice != "Split")
+    //skyler: added the lower case version of each word. non capitilized choice was sent back as invalid.
+    while (playerChoice != "Double" && playerChoice != "double" && playerChoice != "Hit" && playerChoice != "hit" && playerChoice != "Stand" && playerChoice != "stand" && playerChoice != "Split" && playerChoice != "split")
     {
         cout << "Invalid Choice.\n";
         getline(cin, playerChoice);
@@ -621,3 +622,4 @@ bool splitCheck(vector<string>& hand)
         return cardValue;
     }
     
+
