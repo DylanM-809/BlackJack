@@ -1,4 +1,5 @@
-
+//Skyler: got the code working with the display.
+// 
 #include <iostream>
 #include <ctime>
 #include <cstdlib>
@@ -10,32 +11,41 @@ const int ARRAY_SIZE = 52;
 
 const string cardDeck[ARRAY_SIZE] = {
 "spadeAce",   "diamondAce",   "heartAce",   "clubAce",		// (0, 1, 2, 3)
-"spadeTwo",   "diamondTwo",   "heartTwo",   "clubTwo",		// (4, 5, 6, 7)
-"spadeThree", "diamondThree", "heartThree", "clubThree",	// (8, 9, 10, 11)
-"spadeFour",  "diamondFour",  "heartFour",  "clubFour",		// (12, 13, 14, 15)
-"spadeFive",  "diamondFive",  "heartFive",  "clubFive",		// (16, 17, 18, 19)
-"spadeSix",   "diamondSix",   "heartSix",   "clubSix",		// (20, 21, 22, 23)
-"spadeSeven", "diamondSeven", "heartSeven", "clubSeven",	// (24, 25, 26, 27)
-"spadeEight", "diamondEight", "heartEight", "clubEight",	// (28, 29, 30, 31)
-"spadeNine",  "diamondNine",  "heartNine",  "clubNine",		// (32, 33, 34, 35)
-"spadeTen",   "diamondTen",   "heartTen",   "clubTen",		// (36, 37, 38, 39)
+"spade2",     "diamond2",     "heart2",     "club2",		// (4, 5, 6, 7)
+"spade3",     "diamond3",     "heart3",     "club3",	    // (8, 9, 10, 11)
+"spade4",     "diamond4",     "heart4",     "club4",		// (12, 13, 14, 15)
+"spade5",     "diamond5",     "heart5",     "club5",		// (16, 17, 18, 19)
+"spade6",     "diamond6",     "heart6",     "club6",		// (20, 21, 22, 23)
+"spade7",     "diamond7",     "heart7",     "club7",	    // (24, 25, 26, 27)
+"spade8",     "diamond8",     "heart8",     "club8",	    // (28, 29, 30, 31)
+"spade9",     "diamond9",     "heart9",     "club9",		// (32, 33, 34, 35)
+"spade10",    "diamond10",    "heart10",    "club10",		// (36, 37, 38, 39)
 "spadeJack",  "diamondJack",  "heartJack",  "clubJack",		// (40, 41, 42, 43)
 "spadeQueen", "diamondQueen", "heartQueen", "clubQueen",	// (44, 45, 46, 47)
 "spadeKing",  "diamondKing",  "heartKing",  "clubKing" };	// (48, 49, 50, 51)
 
+//Skyler functions
+char getSuit(int, vector<string>&);
+string getCardValue(int, vector<string>&, char&);
+void displayCards(vector<string>&, vector<string>&, int&);
 
+
+bool hitChoice(vector<string>&, vector<string>&, int&, int);
+bool doubleChoice(vector<string>&, vector<string>&, int&, int);
+bool standChoice(vector<string>&, vector<string>&, int&, int);
+bool splitChoice(vector<string>&, vector<string>&, int&, int&);
+bool splitOptions(vector<string>&, vector<string>&, int&, int&);
+string turnOptions(vector<string>&, int, int, bool priorSplit = false);
+void winningHand(vector<string>, vector<string>, int&, int);
+bool bust(vector<string>, vector<string>, int&, int);
 int cardValue(string);
 int sum(vector<string>&);
 void cardDraw(vector<string>&);
 void dealerCpu(vector<string>&);
 void playerCpu(vector<string>&);
-void winningHand(vector<string>, vector<string>, int&, int);
-bool bust(vector<string>, vector<string>, int&, int);
 void betOptions(int, int&);
-string turnOptions(vector<string>&, bool&); // NOT COMPLETE
-//bool splitCheck(vector<string>&); NOT COMPLETE (CHECK IF SPLIT IS POSSIBLE)
-//void blackJack(); NOT COMPLETE (BODY OF THE GAME)
-
+bool splitCheck(vector<string>&);
+void blackJack();
 
 int main()
 {
@@ -43,114 +53,303 @@ int main()
 
     while (test)
     {
-        int chipStack = 1000;
+        blackJack();
+    }
+    return 0;
+}
 
-        while (chipStack > 0)
+void blackJack()
+{
+    int chipStack = 1000;
+
+    while (chipStack > 0)
+    {
+        vector<string> playerHand;
+        vector<string> dealerHand;
+        int playerBet = 0;
+
+        srand(time(NULL));
+
+        // Display betting options
+        betOptions(chipStack, playerBet);
+
+        //Player initlaly draws two cards
+        playerCpu(playerHand);
+
+        //Dealer intially draws one card
+        dealerCpu(dealerHand);
+
+        //skyler display card call added
+        displayCards(playerHand, dealerHand, chipStack);
+
+        bool gameOver = false; // Temp bool for testing
+        while (!gameOver) // Loop for player choice each turn
         {
-            vector<string> playerHand;
-            vector<string> dealerHand;
-            int playerBet = 0;
+            string playerChoice;
 
-            srand(time(NULL));
+            playerChoice = turnOptions(playerHand, chipStack, playerBet);
 
-            // Display betting options
-            betOptions(chipStack, playerBet);
-
-            //Player initlaly draws two cards
-            playerCpu(playerHand);
-
-            //Dealer intially draws one card
-            dealerCpu(dealerHand);
-
-            bool winner = false; // Temp bool for testing
-            bool firstTurn = true;
-            while (!winner) // Loop for player choice each turn
+            if (playerChoice == "Double" || playerChoice == "double")
             {
-                string playerChoice;
+                gameOver = doubleChoice(playerHand, dealerHand, chipStack, playerBet);
+            }
+            else if (playerChoice == "Hit" || playerChoice == "hit")
+            {
 
-                playerChoice = turnOptions(playerHand, firstTurn);
+                gameOver = hitChoice(playerHand, dealerHand, chipStack, playerBet);
+            }
+            else if (playerChoice == "Stand" || playerChoice == "stand")
+            {
 
-                if (playerChoice == "Double" || playerChoice == "double")
-                {
-                    playerBet *= 2;
-                    playerCpu(playerHand); // Player draws only one card
-
-                    if (bust(playerHand, dealerHand, chipStack, playerBet)) // End game if player busts
-                    {
-                        break;
-                    }
-
-                    dealerCpu(dealerHand); // Dealer draw phase
-
-                    if (bust(playerHand, dealerHand, chipStack, playerBet)) // End game if dealer busts
-                    {
-                        break;
-                    }
-                    else
-                    {
-                        winningHand(playerHand, dealerHand, chipStack, playerBet); // Determine the winner
-                        break;
-                    }
-                }
-                else if (playerChoice == "Hit" || playerChoice == "hit")
-                {
-                    playerCpu(playerHand); // Player draws once
-
-                    if (bust(playerHand, dealerHand, chipStack, playerBet)) // End game if player busts
-                    {
-                        break;
-                    }
-                }
-                else if (playerChoice == "Stand" || playerChoice == "stand")
-                {
-                    dealerCpu(dealerHand); // Dealer draw phase
-
-                    if (bust(playerHand, dealerHand, chipStack, playerBet)) // End game if dealer busts
-                    {
-                        break;
-                    }
-                    else
-                    {
-                        winningHand(playerHand, dealerHand, chipStack, playerBet); // Determine the winner
-                        break;
-                    }
-                }
+                gameOver = standChoice(playerHand, dealerHand, chipStack, playerBet);
+            }
+            else if (playerChoice == "Split" || playerChoice == "split")
+            {
+                gameOver = splitChoice(playerHand, dealerHand, chipStack, playerBet);
             }
         }
     }
+    return;
 }
 
-//void blackJack()
-//{
-//    
-//}
+//******************************************************************
+// Definition of function stand.
+// Play the game out if player choice is stand.
+//******************************************************************
+bool standChoice(vector<string>& playerHand, vector<string>& dealerHand, int& chipStack, int playerBet)
+{
+    dealerCpu(dealerHand); // Dealer draw phase
 
+    //skyler display card call added
+    displayCards(playerHand, dealerHand, chipStack);
+    if (bust(playerHand, dealerHand, chipStack, playerBet)) // End game if dealer busts
+    {
+        return true;
+    }
+    else
+    {
+        winningHand(playerHand, dealerHand, chipStack, playerBet); // Determine the winner
+        return true;
+    }
+}
+
+//******************************************************************
+// Definition of function doubleUp.
+// Doubles player bet and draws a single card.
+//******************************************************************
+bool doubleChoice(vector<string>& playerHand, vector<string>& dealerHand, int& chipStack, int playerBet)
+{
+    playerBet *= 2;
+    playerCpu(playerHand); // Player draws only one card
+
+    //skyler display card call added
+    displayCards(playerHand, dealerHand, chipStack);
+    if (bust(playerHand, dealerHand, chipStack, playerBet)) // End game if player busts
+    {
+        return true;
+    }
+
+    dealerCpu(dealerHand); // Dealer draw phase
+
+    //skyler display card call added
+    displayCards(playerHand, dealerHand, chipStack);
+    if (bust(playerHand, dealerHand, chipStack, playerBet)) // End game if dealer busts
+    {
+        return true;
+    }
+    else
+    {
+        winningHand(playerHand, dealerHand, chipStack, playerBet); // Determine the winner
+        return true;
+    }
+}
+
+//******************************************************************
+// Definition of function hit.
+// Draws a single card and checks if player busts.
+//******************************************************************
+bool hitChoice(vector<string>& playerHand, vector<string>& dealerHand, int& chipStack, int playerBet)
+{
+    playerCpu(playerHand); // Player draws once
+
+    //skyler display card call added
+    displayCards(playerHand, dealerHand, chipStack);
+    if (bust(playerHand, dealerHand, chipStack, playerBet)) // End game if player busts
+    {
+        return true;
+    }
+    else
+        return false;
+}
+
+//******************************************************************
+// Definition of function splitHand.
+// Display options during player's turn.
+//******************************************************************
+bool splitChoice(vector<string>& intialHand, vector<string>& dealerHand, int& chipStack, int& playerBet)
+{
+    vector<string> splitHand;
+
+    splitHand.push_back(intialHand[1]);
+    intialHand.pop_back();
+
+    int firstBet = playerBet;
+    bool handBust = splitOptions(intialHand, dealerHand, chipStack, firstBet);
+   
+    int secondBet = playerBet;
+    bool splitBust = splitOptions(splitHand, dealerHand, chipStack, secondBet);
+
+    if (!handBust)
+    {
+        standChoice(intialHand, dealerHand, chipStack, firstBet);
+    }
+    cout << "Press enter to continue.";
+    cin.get();
+    if (!splitBust)
+    {
+        standChoice(splitHand, dealerHand, chipStack, secondBet);
+    }
+
+    return true;
+}
+
+//******************************************************************
+// Definition of function splitOptions.
+// Display options while playing each split hand.
+//******************************************************************
+bool splitOptions(vector<string>& hand, vector<string>& dealerHand, int& chipStack, int& bet)
+{
+    bool endTurn = false;
+    bool bust = false;
+    playerCpu(hand);
+
+    while (!endTurn)
+    {
+        string playerChoice;
+
+        displayCards(hand, dealerHand, chipStack);
+
+        playerChoice = turnOptions(hand, chipStack, bet, true);
+
+        if (playerChoice == "Double" || playerChoice == "double")
+        {
+            bet *= 2;
+            bust = hitChoice(hand, dealerHand, chipStack, bet);
+            endTurn = true;
+        }
+        else if (playerChoice == "Hit" || playerChoice == "hit")
+        {
+            bust = hitChoice(hand, dealerHand, chipStack, bet);
+            if (bust)
+            {
+                endTurn = true;
+            }
+        }
+        else if (playerChoice == "Stand" || playerChoice == "stand")
+        {
+            endTurn = true;
+        }
+    }
+    return bust;
+}
 
 //******************************************************************
 // Definition of function turnOptions.
 // Display options during player's turn.
 //******************************************************************
-string turnOptions(vector<string>& playerHand, bool& firstTurn)
+string turnOptions(vector<string>& playerHand, int chipStack, int playerBet, bool priorSplit)
 {
     string playerChoice;
+    bool doubleUp = false;
+    bool split = splitCheck(playerHand);
+
+    cout << "Current bet: " << playerBet << endl;
 
     cout << "[Hit][Stand]";
+    if (priorSplit)
+    {
+        split = false;
+    }
 
-    if (firstTurn) // Display double option only on the first turn
+    if (playerHand.size() == 2 && playerBet * 2 < chipStack) // Display double option
     {
         cout << "[Double]";
-        firstTurn = false;
+        doubleUp = true;
+    }
+
+    if (split) // Display split option
+    {
+        cout << "[Split]";
     }
 
     cout << "\nYour choice: ";
     getline(cin, playerChoice);
 
-    while (playerChoice != "Double" && playerChoice != "Hit" && playerChoice != "Stand" && playerChoice != "Split")
+    if (!doubleUp && !split)
     {
-        cout << "Invalid Choice.\n";
-        getline(cin, playerChoice);
+        while (playerChoice != "Hit" && playerChoice != "hit" && playerChoice != "Stand" && playerChoice != "stand")
+        {
+            if (playerChoice == "split" || playerChoice == "Split")
+            {
+                cout << "Unable to split. Choose again: ";
+                getline(cin, playerChoice);
+            }
+            else if (playerChoice == "double" || playerChoice == "Double")
+            {
+                cout << "Unable to double. Choose again: ";
+                getline(cin, playerChoice);
+            }
+            else
+            {
+                cout << "Invalid Option. Choose again: ";
+                getline(cin, playerChoice);
+            }
+        }
+        return playerChoice;
     }
-    return playerChoice;
+    else if (!doubleUp)
+    {
+        while (playerChoice != "Hit" && playerChoice != "hit" && playerChoice != "Stand" && playerChoice != "stand" && playerChoice != "Split" && playerChoice != "split")
+        {
+            if (playerChoice == "Double" || playerChoice == "double")
+            {
+                cout << "Unable to double. Choose again: ";
+                getline(cin, playerChoice);
+            }
+            else
+            {
+                cout << "Invalid Option. Choose again: ";
+                getline(cin, playerChoice);
+            }
+        }
+        return playerChoice;
+    }
+    else if (!split)
+    {
+        while (playerChoice != "Double" && playerChoice != "double" && playerChoice != "Hit" && playerChoice != "hit" && playerChoice != "Stand" && playerChoice != "stand")
+        {
+            if (playerChoice == "Split" || playerChoice == "split")
+            {
+                cout << "Unable to split. Choose again: ";
+                getline(cin, playerChoice);
+            }
+            else
+            {
+                cout << "Invalid Option. Choose again: ";
+                getline(cin, playerChoice);
+            }
+        }
+        return playerChoice;
+    }
+    else
+    {
+        while (playerChoice != "Double" && playerChoice != "double" && playerChoice != "Hit" && playerChoice != "hit" && playerChoice != "Stand" && playerChoice != "stand" && playerChoice != "split" && playerChoice != "Split")
+        {
+            cout << "Invalid Option. Choose again: ";
+            getline(cin, playerChoice);
+        }
+        return playerChoice;
+    }
 }
 
 //******************************************************************
@@ -159,7 +358,7 @@ string turnOptions(vector<string>& playerHand, bool& firstTurn)
 //******************************************************************
 void betOptions(int chipStack, int& playerBet)
 {
-    cout << "Chipstack: $" << chipStack << endl;
+    cout << "Chips: " << chipStack << endl;
     if (chipStack >= 1)
         cout << "(1)";
     if (chipStack >= 5)
@@ -176,16 +375,14 @@ void betOptions(int chipStack, int& playerBet)
     cin.ignore();
     cout << endl;
 
-    if (playerBet)
-
-        while (playerBet > chipStack)
-        {
-            cout << "Invalid bet." << endl;
-            cout << "Chipstack: $" << chipStack;
-            cout << "\nPlace your bet: ";
-            cin >> playerBet;
-            cout << endl;
-        }
+     while (playerBet > chipStack)
+     {
+         cout << "Invalid bet." << endl;
+         cout << "Chips: " << chipStack;
+         cout << "\nPlace your bet: ";
+         cin >> playerBet;
+         cout << endl;
+     }
 }
 
 //******************************************************************
@@ -299,13 +496,13 @@ bool bust(vector<string> playerHand, vector<string> dealerHand, int& chipStack, 
 
     if (sum(dealerHand) > 21)
     {
-        cout << "Dealer Bust. You win!" << endl;
+        cout << "Dealer Bust. You win!\n\n";
         chipStack += playerBet;
         return true;
     }
     else if (sum(playerHand) > 21)
     {
-        cout << "Bust! You lose." << endl;
+        cout << "Bust! You lose.\n\n";
         chipStack -= playerBet;
         return true;
     }
@@ -322,20 +519,12 @@ void dealerCpu(vector<string>& dealerHand)
     if (dealerHand.size() == 0) // If dealer hasn't drawn before
     {
         cardDraw(dealerHand);
-
-        //Temp Dealer Display
-        cout << "Dealer card " << size(dealerHand) << ": " << dealerHand[size(dealerHand) - 1] << endl;
-        cout << "Value of dealer's hand: " << sum(dealerHand) << "\n\n";
         return;
     }
 
     while (sum(dealerHand) < 17)
     {
         cardDraw(dealerHand);
-
-        // Temp Dealer Display
-        cout << "Dealer card " << size(dealerHand) << ": " << dealerHand[size(dealerHand) - 1] << endl;
-        cout << "Value of dealer's hand: " << sum(dealerHand) << "\n\n";
     }
     return;
 }
@@ -351,24 +540,12 @@ void playerCpu(vector<string>& playerHand)
         for (int i = 0; i < 2; i++) // Player draws two intial cards
         {
             cardDraw(playerHand);
-
-            //Temp Player Display
-            cout << "Player card " << i + 1 << ": " << playerHand[size(playerHand) - 1] << endl;
         }
-
-        //Temp Player Display
-        cout << "Value of your hand: " << sum(playerHand) << "\n\n";
-
         return;
     }
     else
     {
         cardDraw(playerHand);
-
-        //Temp Player Display
-        cout << "Player card " << size(playerHand) << ": " << playerHand[size(playerHand) - 1] << endl;
-        cout << "Value of your hand: " << sum(playerHand) << "\n\n";
-
         return;
     }
 }
@@ -379,15 +556,234 @@ void playerCpu(vector<string>& playerHand)
 //******************************************************************
 bool splitCheck(vector<string>& hand)
 {
-    int firstCard = cardValue(hand[0]);
-    int secondCard = cardValue(hand[1]);
-
-    if (firstCard == secondCard)
+    if (hand.size() == 2)
     {
-        return true;
+        if (cardValue(hand[0]) == cardValue(hand[1]))
+        {
+            return true;
+        }
+        else
+            return false;
     }
     else
     {
         return false;
     }
+}
+
+//prints the value and suit of player and dealers hands. updates the display when a card is drawn. also prints each hands total value and amount of chips.
+void displayCards(vector<string>& playerHand, vector<string>& pcHand, int& chips)
+{
+    char suit = '0';
+    string cardValue = " ";
+    int currentCard = 0;
+    int currentCardValue = 0;
+    int userChips = 0;
+    string baseCard[7][9] = {
+        {"_", "-", "-","-","-","-","-","-", "_"},
+        {"|", " ", " ", " ", " ", " ", " ", " ", "|"},
+        { "|", " ", " ", " ", " ", " ", " ", " ", "|" },
+        { "|", " ", " ", " ", " ", " ", " ", " ", "|" },
+        { "|", " ", " ", " ", " ", " ", " ", " ", "|" },
+        { "|", " ", " ", " ", " ", " ", " ", " ", "|" },
+        { "|", "_", "_", "_", "_", "_", "_", "_", "|" },
+    };
+
+
+
+
+    //prints Pc hand, number of cards based on pcHand var. stop at predetermind points in the baseCard template to insert cards suit and value.
+    cout << "\n\n\n\n\n\n" << "Chips: " << chips << endl;
+    cout << "Opponents hand value: " << sum(pcHand) << endl;
+    for (int i = 0; i < 7; i++)
+    {
+        for (int h = 0; h < pcHand.size(); h++)
+        {
+            for (int j = 0; j < 9; j++)
+            {
+                if (i == 3 && j == 1)
+                {
+                    //currentCard is a counting var to keep track of what card we are printing. getSuit copies the first letter of the card string
+                    // to find suit. prints the suit in the middle of the card and sets the loop var to skip the spaces used for suit. 
+
+                    suit = getSuit(currentCard, pcHand);
+                    switch (suit)
+                    {
+                    case('h'):
+                        cout << " heart";
+                        currentCard++;
+                        j = 6;
+                        break;
+                    case('s'):
+                        cout << " spade";
+                        currentCard++;
+                        j = 6;
+                        break;
+                    case('d'):
+                        cout << "diamond";
+                        currentCard++;
+                        j = 7;
+                        break;
+                    case('c'):
+                        cout << " club";
+                        currentCard++;
+                        j = 5;
+                        break;
+                    }
+
+                }
+                //if not the spots for suit or value it prints the baseCard templet as is.
+                else {
+                    cout << baseCard[i][j];
+                }
+                //stops code at bottom left of card to add card value
+                if (i == 5 && j == 5) {
+                    //cards are stored like this "heartAce" so each suits card value is a different amount of letters after the suit.
+                    //so i need to call my suit function to send to the value function to allow it to grab only the card value from the string.
+                    suit = getSuit(currentCardValue, pcHand);
+                    cardValue = getCardValue(currentCardValue, pcHand, suit);
+                    // counting var to keep track of what card we are looping so it can convert the cards value correctly.
+                    currentCardValue++;
+                    //print formatting for 10 cards to fit in card template
+                    if (cardValue == "10")
+                    {
+                        cout << (cardValue);
+                    }
+                    else
+                    {
+                        cout << (cardValue) << " ";
+                    }
+                    j = 7;
+                }
+
+            }
+        }
+        cout << endl;
+    }
+    //seperation for formatting
+    cout << "\n\n\n";
+    //reset var for player hand
+    suit = '0';
+    cardValue = " ";
+    currentCard = 0;
+    currentCardValue = 0;
+    //prints players hand number of cards based on playerHand var. does the same as the other half just for the player hand.
+    cout << "Players hand" << endl;
+    for (int i = 0; i < 7; i++)
+    {
+        for (int h = 0; h < playerHand.size(); h++)
+        {
+
+            for (int j = 0; j < 9; j++)
+            {
+                if (i == 3 && j == 1)
+                {
+                    suit = getSuit(currentCard, playerHand);
+                    switch (suit)
+                    {
+                    case('h'):
+                        cout << " heart";
+                        currentCard++;
+                        j = 6;
+                        break;
+                    case('s'):
+                        cout << " spade";
+                        currentCard++;
+                        j = 6;
+                        break;
+                    case('d'):
+                        cout << "diamond";
+                        currentCard++;
+                        j = 7;
+                        break;
+                    case('c'):
+                        cout << " club";
+                        currentCard++;
+                        j = 5;
+                        break;
+                    }
+
+                }
+                else {
+                    cout << baseCard[i][j];
+                }
+                if (i == 5 && j == 5) {
+                    suit = getSuit(currentCardValue, playerHand);
+                    cardValue = getCardValue(currentCardValue, playerHand, suit);
+                    currentCardValue++;
+                    //print formatting for 10 cards to fit in card template
+                    if (cardValue == "10")
+                    {
+                        cout << (cardValue);
+                    }
+                    else
+                    {
+                        cout << (cardValue) << " ";
+                    }
+                    j = 7;
+                }
+
+            }
+        }
+        cout << endl;
+    }
+    //prints cards in hands value for player.
+    cout << "Value of your hand: " << sum(playerHand) << endl << endl;
+}
+
+char getSuit(int cardIndex, vector<string>& hand)
+{
+    //cards are stored in string vector like "spadeAce" this takes the first letter and returns it to identify suit.
+    char suit = hand[cardIndex][0];
+
+    return suit;
+}
+
+string getCardValue(int cardIndex, vector<string>& hand, char& suit)
+{
+    string cardValue = " ";
+    char value = ' ';
+    int k = 0;
+    //cards are stored in string vector like "spadeAce" this takes the suit to know what index to start for the value and takes the first char of
+    // the value in a var. if the char taken is a 1 then the value is 10 and the if statement adds the 0.
+    switch (suit)
+    {
+    case('d'):
+        if (hand[cardIndex][7] == '1')
+        {
+            cardValue = "10";
+        }
+        else {
+            cardValue = hand[cardIndex][7];
+        }
+        break;
+    case('c'):
+        if (hand[cardIndex][4] == '1')
+        {
+            cardValue = "10";
+        }
+        else {
+            cardValue = hand[cardIndex][4];
+        }
+        break;
+    case('h'):
+        if (hand[cardIndex][5] == '1')
+        {
+            cardValue = "10";
+        }
+        else {
+            cardValue = hand[cardIndex][5];
+        }
+        break;
+    case('s'):
+        if (hand[cardIndex][5] == '1')
+        {
+            cardValue = "10";
+        }
+        else {
+            cardValue = hand[cardIndex][5];
+        }
+        break;
+    }
+    return cardValue;
 }
