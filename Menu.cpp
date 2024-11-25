@@ -47,10 +47,11 @@ void gameInstructions() {
     cout << "Welcome to the game gamble.exe!\n";
     cout << "1. This game is pretty much Blackjack with a few twists.\n";
     cout << "2. The goal of this game is to get as close to 21 as possible without going over.\n";
-    cout << "3. Aces are worth 1 or 11 points, face cards are worth 10 points, and all other cards are worth their face value.\n";
-    cout << "4. On your turn, you can choose to \"Hit\" to draw a card or \"Stand\" to stop drawing cards.\n";
-    cout << "5. The dealer must draw until their total is 17 or higher.\n";
-    cout << "6. The player with the higher total wins, unless they bust by going over 21.\n";
+    cout << "3. Each player starts with a chipset and places a bet before the round. \n";
+    cout << "4. Aces are worth 1 or 11 points, face cards are worth 10 points, and all other cards are worth their face value.\n";
+    cout << "5. On your turn, you can choose to \"Hit\" to draw a card \"Stand\" to stop drawing cards or to \"Double\" where you double your bet and draw one card before being forced to stand.\n";
+    cout << "6. The dealer must draw until their total is 17 or higher.\n";
+    cout << "7. The player with the higher total wins, unless they bust by going over 21.\n";
     cout << endl;
     cout << "Good Luck and Have Fun Playing!\n";
     cout << "\nPress Enter to return to the menu screen.";
