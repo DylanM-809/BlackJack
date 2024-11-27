@@ -1,10 +1,11 @@
-//Skyler: got the code working with the display.
-// 
+
 #include <iostream>
 #include <ctime>
 #include <cstdlib>
 #include <string>
 #include <vector>
+#include <fstream>
+#include <limits>
 using namespace std;
 
 const int ARRAY_SIZE = 52;
@@ -24,12 +25,19 @@ const string cardDeck[ARRAY_SIZE] = {
 "spadeQueen", "diamondQueen", "heartQueen", "clubQueen",	// (44, 45, 46, 47)
 "spadeKing",  "diamondKing",  "heartKing",  "clubKing" };	// (48, 49, 50, 51)
 
+// Rylan Menu Functions
+void displayMenu();
+void startGame();
+void gameInstructions();
+void exitGame();
+void Menu();
+
 //Skyler functions
 char getSuit(int, vector<string>&);
 string getCardValue(int, vector<string>&, char&);
 void displayCards(vector<string>&, vector<string>&, int&);
 
-
+// Dylan Logic Funtions
 bool hitChoice(vector<string>&, vector<string>&, int&, int);
 bool doubleChoice(vector<string>&, vector<string>&, int&, int);
 bool standChoice(vector<string>&, vector<string>&, int&, int);
@@ -43,21 +51,21 @@ int sum(vector<string>&);
 void cardDraw(vector<string>&);
 void dealerCpu(vector<string>&);
 void playerCpu(vector<string>&);
-void betOptions(int, int&);
+void placeBet(int, int&);
+void displayChips(int);
 bool splitCheck(vector<string>&);
 void blackJack();
 
 int main()
 {
-    bool test = true; // Test boolean to keep loop going
-
-    while (test)
-    {
-        blackJack();
-    }
+    Menu();
     return 0;
 }
 
+//******************************************************************
+// Definition of function blackJack.
+// Main game code for blackjack.
+//******************************************************************
 void blackJack()
 {
     int chipStack = 1000;
@@ -71,7 +79,9 @@ void blackJack()
         srand(time(NULL));
 
         // Display betting options
-        betOptions(chipStack, playerBet);
+        cout << "\nChips: " << chipStack << endl;
+        displayChips(chipStack);
+        placeBet(chipStack, playerBet);
 
         //Player initlaly draws two cards
         playerCpu(playerHand);
@@ -82,7 +92,7 @@ void blackJack()
         //skyler display card call added
         displayCards(playerHand, dealerHand, chipStack);
 
-        bool gameOver = false; // Temp bool for testing
+        bool gameOver = false;
         while (!gameOver) // Loop for player choice each turn
         {
             string playerChoice;
@@ -95,12 +105,10 @@ void blackJack()
             }
             else if (playerChoice == "Hit" || playerChoice == "hit")
             {
-
                 gameOver = hitChoice(playerHand, dealerHand, chipStack, playerBet);
             }
             else if (playerChoice == "Stand" || playerChoice == "stand")
             {
-
                 gameOver = standChoice(playerHand, dealerHand, chipStack, playerBet);
             }
             else if (playerChoice == "Split" || playerChoice == "split")
@@ -108,12 +116,114 @@ void blackJack()
                 gameOver = splitChoice(playerHand, dealerHand, chipStack, playerBet);
             }
         }
+        if(chipStack > 0)
+        {
+            cout << "Press enter to play again. ";
+            cin.ignore();
+            cout << endl;
+        }
+        else
+        {
+            cout << "You have no chips remaining." << endl;
+            cout << "Returning to main menu.\n\n\n";
+        }
     }
     return;
 }
 
 //******************************************************************
-// Definition of function stand.
+// Menu Function
+// Calls displayMenu, startGame, gameInstructions, 
+// and exitGame functions.
+//******************************************************************
+void Menu() {
+    int choice;
+    bool running = true;
+
+    while (running) {
+        displayMenu();
+        cin >> choice;
+        cout << endl;
+
+        // Input Validation
+        if (cin.fail() || choice < 1 || choice > 3) {
+            cin.clear();
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+            cout << "Invalid choice! Please enter a number between 1 and 3.\n";
+            continue;
+        }
+
+        switch (choice) {
+        case 1:
+            startGame();
+            break;
+        case 2:
+            gameInstructions();
+            break;
+        case 3:
+            exitGame();
+            running = false;
+            break;
+        default:
+            cout << "Invalid choice! Please choose again.\n";
+            break;
+        }
+    }
+}
+
+//******************************************************************
+// Function to display menu.
+// Called by Menu function.
+//******************************************************************
+void displayMenu() {
+    cout << "===== gamble.exe =====\n";
+    cout << "1. Start Game\n";
+    cout << "2. How to play\n";
+    cout << "3. Exit Game\n";
+    cout << "=====================\n";
+    cout << "Enter your choice: ";
+}
+
+//******************************************************************
+// Function to start game.
+// Called by Menu function.
+//******************************************************************
+void startGame() {
+    cout << "Starting a new game...\n";
+    blackJack();
+}
+
+//******************************************************************
+// Function to display game instructions.
+// Called by Menu function.
+//******************************************************************
+void gameInstructions() {
+    cout << "Welcome to the game gamble.exe!\n";
+    cout << "1. This game is pretty much Blackjack with a few twists.\n";
+    cout << "2. The goal of this game is to get as close to 21 as possible without going over.\n";
+    cout << "3. Aces are worth 1 or 11 points, face cards are worth 10 points, and all other cards are worth their face value.\n";
+    cout << "4. On your turn, you can choose to \"Hit\" to draw a card or \"Stand\" to stop drawing cards.\n";
+    cout << "5. The dealer must draw until their total is 17 or higher.\n";
+    cout << "6. The player with the higher total wins, unless they bust by going over 21.\n";
+    cout << endl;
+    cout << "Good Luck and Have Fun Playing!\n";
+    cout << "\nPress Enter to return to the menu screen.";
+    cin.ignore();
+    cin.get();
+    cout << endl;
+}
+
+//******************************************************************
+// Function to exit game.
+// Called by Menu function.
+//******************************************************************
+void exitGame() {
+    cout << "Exiting Game...\n";
+    exit(0);
+}
+
+//******************************************************************
+// Definition of function standChoice.
 // Play the game out if player choice is stand.
 //******************************************************************
 bool standChoice(vector<string>& playerHand, vector<string>& dealerHand, int& chipStack, int playerBet)
@@ -134,7 +244,7 @@ bool standChoice(vector<string>& playerHand, vector<string>& dealerHand, int& ch
 }
 
 //******************************************************************
-// Definition of function doubleUp.
+// Definition of function doubleChoice.
 // Doubles player bet and draws a single card.
 //******************************************************************
 bool doubleChoice(vector<string>& playerHand, vector<string>& dealerHand, int& chipStack, int playerBet)
@@ -165,7 +275,7 @@ bool doubleChoice(vector<string>& playerHand, vector<string>& dealerHand, int& c
 }
 
 //******************************************************************
-// Definition of function hit.
+// Definition of function hitChoice.
 // Draws a single card and checks if player busts.
 //******************************************************************
 bool hitChoice(vector<string>& playerHand, vector<string>& dealerHand, int& chipStack, int playerBet)
@@ -183,39 +293,53 @@ bool hitChoice(vector<string>& playerHand, vector<string>& dealerHand, int& chip
 }
 
 //******************************************************************
-// Definition of function splitHand.
-// Display options during player's turn.
+// Definition of function splitChoice.
+// Automates game should play chose to split hands.
 //******************************************************************
 bool splitChoice(vector<string>& intialHand, vector<string>& dealerHand, int& chipStack, int& playerBet)
 {
     vector<string> splitHand;
-
     splitHand.push_back(intialHand[1]);
     intialHand.pop_back();
 
+    chipStack -= playerBet;
+    // Play intial hand
     int firstBet = playerBet;
     bool handBust = splitOptions(intialHand, dealerHand, chipStack, firstBet);
-   
+
+    chipStack += playerBet;
+    if (!handBust)
+    {
+        chipStack -= firstBet;
+    }
+
+    // Play second hand
     int secondBet = playerBet;
     bool splitBust = splitOptions(splitHand, dealerHand, chipStack, secondBet);
+    if (!handBust)
+    {
+        chipStack += firstBet;
+    }
 
     if (!handBust)
     {
         standChoice(intialHand, dealerHand, chipStack, firstBet);
+        if (!splitBust)
+        {
+            cout << "Press enter to continue.";
+            cin.ignore();
+        }
     }
-    cout << "Press enter to continue.";
-    cin.get();
     if (!splitBust)
     {
         standChoice(splitHand, dealerHand, chipStack, secondBet);
     }
-
     return true;
 }
 
 //******************************************************************
 // Definition of function splitOptions.
-// Display options while playing each split hand.
+// Controls menu options for split hand.
 //******************************************************************
 bool splitOptions(vector<string>& hand, vector<string>& dealerHand, int& chipStack, int& bet)
 {
@@ -236,6 +360,8 @@ bool splitOptions(vector<string>& hand, vector<string>& dealerHand, int& chipSta
             bet *= 2;
             bust = hitChoice(hand, dealerHand, chipStack, bet);
             endTurn = true;
+            cout << "Press enter to continue.";
+            cin.ignore();
         }
         else if (playerChoice == "Hit" || playerChoice == "hit")
         {
@@ -243,6 +369,8 @@ bool splitOptions(vector<string>& hand, vector<string>& dealerHand, int& chipSta
             if (bust)
             {
                 endTurn = true;
+                cout << "Press enter to continue.";
+                cin.ignore();
             }
         }
         else if (playerChoice == "Stand" || playerChoice == "stand")
@@ -261,25 +389,30 @@ string turnOptions(vector<string>& playerHand, int chipStack, int playerBet, boo
 {
     string playerChoice;
     bool doubleUp = false;
-    bool split = splitCheck(playerHand);
+    bool split = false;
 
-    cout << "Current bet: " << playerBet << endl;
+    displayChips(chipStack);
+    cout << "Current bet: " << playerBet << endl << endl;
 
     cout << "[Hit][Stand]";
-    if (priorSplit)
+
+    if (playerHand.size() == 2 && playerBet * 2 <= chipStack) // Display double option
     {
-        split = false;
+            cout << "[Double]";
+            doubleUp = true;
     }
 
-    if (playerHand.size() == 2 && playerBet * 2 < chipStack) // Display double option
+    if (splitCheck(playerHand) && playerBet * 2 <= chipStack) // Display split option
     {
-        cout << "[Double]";
-        doubleUp = true;
-    }
-
-    if (split) // Display split option
-    {
-        cout << "[Split]";
+        if (priorSplit)
+        {
+            split = false;
+        }
+        else
+        {
+            cout << "[Split]";
+            split = true;
+        }
     }
 
     cout << "\nYour choice: ";
@@ -353,12 +486,11 @@ string turnOptions(vector<string>& playerHand, int chipStack, int playerBet, boo
 }
 
 //******************************************************************
-// Definition of function betOptions.
-// Display options during betting phase
+// Definition of function displayChips.
+// Display chip layout in game.
 //******************************************************************
-void betOptions(int chipStack, int& playerBet)
+void displayChips(int chipStack)
 {
-    cout << "Chips: " << chipStack << endl;
     if (chipStack >= 1)
         cout << "(1)";
     if (chipStack >= 5)
@@ -369,25 +501,38 @@ void betOptions(int chipStack, int& playerBet)
         cout << "(50)";
     if (chipStack >= 100)
         cout << "(100)";
+    if (chipStack >= 500)
+        cout << "(500)";
+    cout << endl;
+}
+
+//******************************************************************
+// Definition of function placeBet.
+// Accepts players bet and validates input.
+//******************************************************************
+void placeBet(int chipStack, int& playerBet)
+{
 
     cout << "\nPlace your bet: ";
     cin >> playerBet;
     cin.ignore();
     cout << endl;
 
-     while (playerBet > chipStack)
-     {
-         cout << "Invalid bet." << endl;
-         cout << "Chips: " << chipStack;
-         cout << "\nPlace your bet: ";
-         cin >> playerBet;
-         cout << endl;
-     }
+    while (playerBet > chipStack || playerBet < 1)
+    {
+        cout << "Invalid bet." << endl;
+        cout << "Chips: " << chipStack << endl;
+        displayChips(chipStack);
+        cout << "\nPlace your bet: ";
+        cin >> playerBet;
+        cin.ignore();
+        cout << endl;
+    }
 }
 
 //******************************************************************
 // Definition of function cardDraw.
-// Adds a card to hand and increment hand size
+// Adds a card to hand and increment hand size.
 //******************************************************************
 void cardDraw(vector<string>& hand)
 {
@@ -396,7 +541,7 @@ void cardDraw(vector<string>& hand)
 
 //******************************************************************
 // Definition of function sum.
-// Return sum of card values in hand
+// Return sum of card values in hand.
 //******************************************************************
 int sum(vector<string>& hand)
 {
@@ -429,7 +574,7 @@ int sum(vector<string>& hand)
 
 //******************************************************************
 // Definition of function cardValue.
-// Returns the card value of a single card
+// Returns the card value of a single card.
 //******************************************************************
 int cardValue(string card)
 {
@@ -467,42 +612,42 @@ int cardValue(string card)
 
 //******************************************************************
 // Definition of function winningHand.
-// Compare player vs dealer to determine winning hand
+// Compare player vs dealer to determine winning hand.
 //******************************************************************
 void winningHand(vector<string> playerHand, vector<string> dealerHand, int& chipStack, int playerBet)
 {
     if (sum(playerHand) > sum(dealerHand))
     {
-        cout << "You win!\n\n";
+        cout << "You win! +(" << playerBet << ")\n\n";
         chipStack += playerBet;
     }
     else if (sum(dealerHand) > sum(playerHand))
     {
-        cout << "You lose.\n\n";
+        cout << "You lose. -(" << playerBet << ")\n\n";
         chipStack -= playerBet;
     }
     else
     {
-        cout << "The game is a push.\n\n";
+        cout << "The game is a push. +(0)\n\n";
     }
 }
 
 //******************************************************************
 // Definition of function bust.
-// Checks hands for total sum over 21
+// Checks hands for total sum over 21.
 //******************************************************************
 bool bust(vector<string> playerHand, vector<string> dealerHand, int& chipStack, int playerBet)
 {
 
     if (sum(dealerHand) > 21)
     {
-        cout << "Dealer Bust. You win!\n\n";
+        cout << "Dealer Bust. You win! +(" << playerBet << ")\n\n";
         chipStack += playerBet;
         return true;
     }
     else if (sum(playerHand) > 21)
     {
-        cout << "Bust! You lose.\n\n";
+        cout << "Bust! You lose. -(" << playerBet << ")\n\n";
         chipStack -= playerBet;
         return true;
     }
@@ -552,7 +697,7 @@ void playerCpu(vector<string>& playerHand)
 
 //******************************************************************
 // Definition of function splitCheck.
-// Uses parameters to check if player can split
+// Uses parameters to check if player can split.
 //******************************************************************
 bool splitCheck(vector<string>& hand)
 {
