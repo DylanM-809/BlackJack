@@ -79,8 +79,6 @@ void blackJack()
         srand(time(NULL));
 
         // Display betting options
-        cout << "\nChips: " << chipStack << endl;
-        displayChips(chipStack);
         placeBet(chipStack, playerBet);
 
         //Player initlaly draws two cards
@@ -119,7 +117,7 @@ void blackJack()
         if(chipStack > 0)
         {
             cout << "Press enter to play again. ";
-            cin.ignore();
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
             cout << endl;
         }
         else
@@ -327,7 +325,7 @@ bool splitChoice(vector<string>& intialHand, vector<string>& dealerHand, int& ch
         if (!splitBust)
         {
             cout << "Press enter to continue.";
-            cin.ignore();
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
         }
     }
     if (!splitBust)
@@ -361,7 +359,7 @@ bool splitOptions(vector<string>& hand, vector<string>& dealerHand, int& chipSta
             bust = hitChoice(hand, dealerHand, chipStack, bet);
             endTurn = true;
             cout << "Press enter to continue.";
-            cin.ignore();
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
         }
         else if (playerChoice == "Hit" || playerChoice == "hit")
         {
@@ -370,7 +368,7 @@ bool splitOptions(vector<string>& hand, vector<string>& dealerHand, int& chipSta
             {
                 endTurn = true;
                 cout << "Press enter to continue.";
-                cin.ignore();
+                cin.ignore(numeric_limits<streamsize>::max(), '\n');
             }
         }
         else if (playerChoice == "Stand" || playerChoice == "stand")
@@ -512,21 +510,29 @@ void displayChips(int chipStack)
 //******************************************************************
 void placeBet(int chipStack, int& playerBet)
 {
-
-    cout << "\nPlace your bet: ";
-    cin >> playerBet;
-    cin.ignore();
-    cout << endl;
-
-    while (playerBet > chipStack || playerBet < 1)
+    bool validation = false;
+    while (!validation)
     {
-        cout << "Invalid bet." << endl;
         cout << "Chips: " << chipStack << endl;
         displayChips(chipStack);
         cout << "\nPlace your bet: ";
         cin >> playerBet;
-        cin.ignore();
-        cout << endl;
+        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+
+        if (cin.fail())
+        {
+            cin.clear();
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+            cout << "\nEnter a numerical value.\n";
+        }
+        else if (playerBet > chipStack || playerBet < 1)
+        {
+            cout << "\nInvalid bet.\n";
+        }
+        else
+        {
+            break;
+        }
     }
 }
 
@@ -536,7 +542,7 @@ void placeBet(int chipStack, int& playerBet)
 //******************************************************************
 void cardDraw(vector<string>& hand)
 {
-    hand.push_back(cardDeck[rand() % 52]);
+    hand.push_back(cardDeck[rand() % 52]); // Randomly add a single card to hand
 }
 
 //******************************************************************
@@ -550,9 +556,9 @@ int sum(vector<string>& hand)
     for (int i = 0; i < hand.size(); i++)
     {
         sum += cardValue(hand[i]);
-        for (int j = 0; j < 4; j++)
+        for (int j = 0; j < 4; j++) 
         {
-            if (hand[i] == cardDeck[j])
+            if (hand[i] == cardDeck[j]) // Compare for aces
             {
                 aceNumber++;
             }
@@ -580,9 +586,9 @@ int cardValue(string card)
 {
     int value = 0;
     int counter = 0;
-    for (string i : cardDeck)
+    for (string i : cardDeck) // Loop through cardDeck
     {
-        if (card == i)
+        if (card == i) // Compare card
         {
             if (counter < 4) // Ace cards
                 value = 11;
@@ -616,17 +622,17 @@ int cardValue(string card)
 //******************************************************************
 void winningHand(vector<string> playerHand, vector<string> dealerHand, int& chipStack, int playerBet)
 {
-    if (sum(playerHand) > sum(dealerHand))
+    if (sum(playerHand) > sum(dealerHand)) // If player hand is larger
     {
         cout << "You win! +(" << playerBet << ")\n\n";
         chipStack += playerBet;
     }
-    else if (sum(dealerHand) > sum(playerHand))
+    else if (sum(dealerHand) > sum(playerHand)) // If dealer hand is larger
     {
         cout << "You lose. -(" << playerBet << ")\n\n";
         chipStack -= playerBet;
     }
-    else
+    else // If hands are equal
     {
         cout << "The game is a push. +(0)\n\n";
     }
@@ -638,14 +644,13 @@ void winningHand(vector<string> playerHand, vector<string> dealerHand, int& chip
 //******************************************************************
 bool bust(vector<string> playerHand, vector<string> dealerHand, int& chipStack, int playerBet)
 {
-
-    if (sum(dealerHand) > 21)
+    if (sum(dealerHand) > 21) // If dealerhand busts
     {
         cout << "Dealer Bust. You win! +(" << playerBet << ")\n\n";
         chipStack += playerBet;
         return true;
     }
-    else if (sum(playerHand) > 21)
+    else if (sum(playerHand) > 21) // If player hand busts
     {
         cout << "Bust! You lose. -(" << playerBet << ")\n\n";
         chipStack -= playerBet;
