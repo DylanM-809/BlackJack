@@ -88,8 +88,6 @@ void blackJack(bool& eraserBought, bool& staffBought)
         srand(time(NULL));
 
         // Display betting options
-        cout << "\nChips: " << chipStack << endl;
-        displayChips(chipStack);
         placeBet(chipStack, playerBet);
 
         //Player initlaly draws two cards
