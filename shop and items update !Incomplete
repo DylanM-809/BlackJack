@@ -491,7 +491,7 @@ string turnOptions(vector<string>& playerHand, int chipStack, int playerBet, boo
     }
     else
     {
-        while (playerChoice != "Double" && playerChoice != "double" && playerChoice != "Hit" && playerChoice != "hit" && playerChoice != "Stand" && playerChoice != "stand" && playerChoice != "split" && playerChoice != "Split")
+        while (playerChoice != "Double" && playerChoice != "double" && playerChoice != "Hit" && playerChoice != "hit" && playerChoice != "Stand" && playerChoice != "stand" && playerChoice != "split" && playerChoice != "Split" && playerChoice != "Item" && playerChoice != "item")
         {
             cout << "Invalid Option. Choose again: ";
             getline(cin, playerChoice);
