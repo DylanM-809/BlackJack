@@ -116,14 +116,15 @@ void blackJack()
         }
         if(chipStack > 0)
         {
-            cout << "Press enter to play again. ";
+            cout << "Press enter to play again. \n";
             cin.ignore(numeric_limits<streamsize>::max(), '\n');
             cout << endl;
         }
         else
         {
             cout << "You have no chips remaining." << endl;
-            cout << "Returning to main menu.\n\n\n";
+            cout << "Press Enter to return to main menu. \n";
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
         }
     }
     return;
@@ -258,6 +259,8 @@ bool doubleChoice(vector<string>& playerHand, vector<string>& dealerHand, int& c
         return true;
     }
 
+    cout << "Press enter to continue. ";
+    cin.ignore(numeric_limits<streamsize>::max(), '\n');
     dealerCpu(dealerHand); // Dealer draw phase
 
     //skyler display card call added
@@ -315,7 +318,7 @@ bool splitChoice(vector<string>& intialHand, vector<string>& dealerHand, int& ch
         standChoice(intialHand, dealerHand, chipStack, firstBet);
         if (!splitBust)
         {
-            cout << "Press enter to continue.";
+            cout << "Press enter to continue. ";
             cin.ignore(numeric_limits<streamsize>::max(), '\n');
         }
     }
@@ -350,7 +353,7 @@ bool splitOptions(vector<string>& hand, vector<string>& dealerHand, int& chipSta
             bet *= 2;
             bust = hitChoice(hand, dealerHand, chipStack, bet);
             endTurn = true;
-            cout << "Press enter to continue.";
+            cout << "Press enter to continue. ";
             cin.ignore(numeric_limits<streamsize>::max(), '\n');
         }
         else if (playerChoice == "Hit" || playerChoice == "hit")
@@ -359,7 +362,7 @@ bool splitOptions(vector<string>& hand, vector<string>& dealerHand, int& chipSta
             if (bust)
             {
                 endTurn = true;
-                cout << "Press enter to continue.";
+                cout << "Press enter to continue. ";
                 cin.ignore(numeric_limits<streamsize>::max(), '\n');
             }
         }
