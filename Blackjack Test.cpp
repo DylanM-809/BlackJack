@@ -51,7 +51,7 @@ int sum(vector<string>&);
 void cardDraw(vector<string>&);
 void dealerCpu(vector<string>&);
 void playerCpu(vector<string>&);
-void placeBet(int, int&);
+void placeBet(int&, int&);
 void displayChips(int);
 bool splitCheck(vector<string>&);
 void blackJack();
@@ -247,6 +247,7 @@ bool standChoice(vector<string>& playerHand, vector<string>& dealerHand, int& ch
 //******************************************************************
 bool doubleChoice(vector<string>& playerHand, vector<string>& dealerHand, int& chipStack, int playerBet)
 {
+    chipStack -= playerBet;
     playerBet *= 2;
     playerCpu(playerHand); // Player draws only one card
 
@@ -305,19 +306,9 @@ bool splitChoice(vector<string>& intialHand, vector<string>& dealerHand, int& ch
     int firstBet = playerBet;
     bool handBust = splitOptions(intialHand, dealerHand, chipStack, firstBet);
 
-    chipStack += playerBet;
-    if (!handBust)
-    {
-        chipStack -= firstBet;
-    }
-
     // Play second hand
     int secondBet = playerBet;
     bool splitBust = splitOptions(splitHand, dealerHand, chipStack, secondBet);
-    if (!handBust)
-    {
-        chipStack += firstBet;
-    }
 
     if (!handBust)
     {
@@ -355,6 +346,7 @@ bool splitOptions(vector<string>& hand, vector<string>& dealerHand, int& chipSta
 
         if (playerChoice == "Double" || playerChoice == "double")
         {
+            chipStack -= bet;
             bet *= 2;
             bust = hitChoice(hand, dealerHand, chipStack, bet);
             endTurn = true;
@@ -394,7 +386,7 @@ string turnOptions(vector<string>& playerHand, int chipStack, int playerBet, boo
 
     cout << "[Hit][Stand]";
 
-    if (playerHand.size() == 2 && playerBet * 2 <= chipStack) // Display double option
+    if (playerHand.size() == 2 && playerBet <= chipStack) // Display double option
     {
             cout << "[Double]";
             doubleUp = true;
@@ -508,7 +500,7 @@ void displayChips(int chipStack)
 // Definition of function placeBet.
 // Accepts players bet and validates input.
 //******************************************************************
-void placeBet(int chipStack, int& playerBet)
+void placeBet(int& chipStack, int& playerBet)
 {
     bool validation = false;
     while (!validation)
@@ -534,6 +526,7 @@ void placeBet(int chipStack, int& playerBet)
             break;
         }
     }
+    chipStack -= playerBet;
 }
 
 //******************************************************************
@@ -625,16 +618,16 @@ void winningHand(vector<string> playerHand, vector<string> dealerHand, int& chip
     if (sum(playerHand) > sum(dealerHand)) // If player hand is larger
     {
         cout << "You win! +(" << playerBet << ")\n\n";
-        chipStack += playerBet;
+        chipStack += (playerBet * 2);
     }
     else if (sum(dealerHand) > sum(playerHand)) // If dealer hand is larger
     {
         cout << "You lose. -(" << playerBet << ")\n\n";
-        chipStack -= playerBet;
     }
     else // If hands are equal
     {
         cout << "The game is a push. +(0)\n\n";
+        chipStack += playerBet;
     }
 }
 
@@ -647,13 +640,12 @@ bool bust(vector<string> playerHand, vector<string> dealerHand, int& chipStack, 
     if (sum(dealerHand) > 21) // If dealerhand busts
     {
         cout << "Dealer Bust. You win! +(" << playerBet << ")\n\n";
-        chipStack += playerBet;
+        chipStack += (playerBet * 2);
         return true;
     }
     else if (sum(playerHand) > 21) // If player hand busts
     {
         cout << "Bust! You lose. -(" << playerBet << ")\n\n";
-        chipStack -= playerBet;
         return true;
     }
     else
