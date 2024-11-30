@@ -55,6 +55,7 @@ void placeBet(int&, int&);
 void displayChips(int);
 bool splitCheck(vector<string>&);
 void blackJack();
+int chipsValidation();
 
 int main()
 {
@@ -68,7 +69,8 @@ int main()
 //******************************************************************
 void blackJack()
 {
-    int chipStack = 1000;
+    int chipStack = 0;
+    chipStack = chipsValidation();
 
     while (chipStack > 0)
     {
@@ -116,9 +118,9 @@ void blackJack()
         }
         if(chipStack > 0)
         {
-            cout << "Press enter to play again. \n";
+            cout << "Press enter to play again. ";
             cin.ignore(numeric_limits<streamsize>::max(), '\n');
-            cout << endl;
+            cout << "\n\n";
         }
         else
         {
@@ -530,6 +532,42 @@ void placeBet(int& chipStack, int& playerBet)
         }
     }
     chipStack -= playerBet;
+}
+
+//******************************************************************
+// Definition of function chipsValidation.
+// Asks user for starting chips value and validates.
+//******************************************************************
+int chipsValidation()
+{
+    int chipStack = 0;
+
+    cout << endl;
+
+    bool validation = false;
+    while (!validation)
+    {
+        cout << "Enter starting chips (1000-5000): ";
+        cin >> chipStack;
+        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+
+        if (cin.fail())
+        {
+            cin.clear();
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+            cout << "\nEnter a numerical value.\n";
+        }
+        else if (chipStack > 5000 || chipStack < 1000)
+        {
+            cout << "\nInvalid value entered.\n";
+        }
+        else
+        {
+            break;
+        }
+    }
+    cout << endl;
+    return chipStack;
 }
 
 //******************************************************************
