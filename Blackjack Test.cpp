@@ -204,7 +204,7 @@ void gameInstructions() {
     cout << "2. The goal of this game is to get as close to 21 as possible without going over.\n";
     cout << "3. Aces are worth 1 or 11 points, face cards are worth 10 points, and all other cards are worth their face value.\n";
     cout << "4. On your turn, you can choose to \"Hit\" to draw a card, to \"Stand\" to stop drawing cards, \n";
-    cout << "to \"Double\" double your initial bet and draw a card before being forced to stand, or to \"Split\ \n"; 
+    cout << "to \"Double\" double your initial bet and draw a card before being forced to stand, or to \"Split\" \n"; 
     cout << "to separate a pair of identical cards dealt to you into two separate hands.\n";
     cout << "5. The dealer must draw until their total is 17 or higher.\n";
     cout << "6. The player with the higher total wins, unless they bust by going over 21.\n";
