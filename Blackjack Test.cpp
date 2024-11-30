@@ -203,9 +203,13 @@ void gameInstructions() {
     cout << "1. This game is pretty much Blackjack with a few twists.\n";
     cout << "2. The goal of this game is to get as close to 21 as possible without going over.\n";
     cout << "3. Aces are worth 1 or 11 points, face cards are worth 10 points, and all other cards are worth their face value.\n";
-    cout << "4. On your turn, you can choose to \"Hit\" to draw a card or \"Stand\" to stop drawing cards.\n";
+    cout << "4. On your turn, you can choose to \"Hit\" to draw a card, to \"Stand\" to stop drawing cards, \n";
+    cout << "to \"Double\" double your initial bet and draw a card before being forced to stand, or to \"Split\ \n"; 
+    cout << "to separate a pair of identical cards dealt to you into two separate hands.\n";
     cout << "5. The dealer must draw until their total is 17 or higher.\n";
     cout << "6. The player with the higher total wins, unless they bust by going over 21.\n";
+    cout << "7. If the player and dealer have identical value at the end of the hand this is a push (tie), \n";
+    cout << "and each player keeps their bet.\n";
     cout << endl;
     cout << "Good Luck and Have Fun Playing!\n";
     cout << "\nPress Enter to return to the menu screen.";
