@@ -116,7 +116,7 @@ void blackJack()
                 gameOver = splitChoice(playerHand, dealerHand, chipStack, playerBet);
             }
         }
-        if(chipStack > 0)
+        if (chipStack > 0)
         {
             cout << "Press enter to play again. ";
             cin.ignore(numeric_limits<streamsize>::max(), '\n');
@@ -204,7 +204,7 @@ void gameInstructions() {
     cout << "2. The goal of this game is to get as close to 21 as possible without going over.\n";
     cout << "3. Aces are worth 1 or 11 points, face cards are worth 10 points, and all other cards are worth their face value.\n";
     cout << "4. On your turn, you can choose to \"Hit\" to draw a card, to \"Stand\" to stop drawing cards, \n";
-    cout << "to \"Double\" double your initial bet and draw a card before being forced to stand, or to \"Split\" \n"; 
+    cout << "to \"Double\" double your initial bet and draw a card before being forced to stand, or to \"Split\" \n";
     cout << "to separate a pair of identical cards dealt to you into two separate hands.\n";
     cout << "5. The dealer must draw until their total is 17 or higher.\n";
     cout << "6. The player with the higher total wins, unless they bust by going over 21.\n";
@@ -321,7 +321,7 @@ bool splitChoice(vector<string>& intialHand, vector<string>& dealerHand, int& ch
 
     if (!handBust)
     {
-        standChoice(intialHand, dealerHand, chipStack, firstBet);
+        standChoice(intialHand, dealerHand, chipStack, firstBet); // Display first outcome
         if (!splitBust)
         {
             cout << "Press enter to continue. ";
@@ -330,7 +330,7 @@ bool splitChoice(vector<string>& intialHand, vector<string>& dealerHand, int& ch
     }
     if (!splitBust)
     {
-        standChoice(splitHand, dealerHand, chipStack, secondBet);
+        standChoice(splitHand, dealerHand, chipStack, secondBet); // Display second outcome
     }
     return true;
 }
@@ -341,9 +341,9 @@ bool splitChoice(vector<string>& intialHand, vector<string>& dealerHand, int& ch
 //******************************************************************
 bool splitOptions(vector<string>& hand, vector<string>& dealerHand, int& chipStack, int& bet)
 {
-    bool endTurn = false;
+    bool endTurn = false; // Hand loop boolean
     bool bust = false;
-    playerCpu(hand);
+    playerCpu(hand); // Player draws a single card
 
     while (!endTurn)
     {
@@ -351,7 +351,7 @@ bool splitOptions(vector<string>& hand, vector<string>& dealerHand, int& chipSta
 
         displayCards(hand, dealerHand, chipStack);
 
-        playerChoice = turnOptions(hand, chipStack, bet, true);
+        playerChoice = turnOptions(hand, chipStack, bet, true); // Input for players choice
 
         if (playerChoice == "Double" || playerChoice == "double")
         {
@@ -397,8 +397,8 @@ string turnOptions(vector<string>& playerHand, int chipStack, int playerBet, boo
 
     if (playerHand.size() == 2 && playerBet <= chipStack) // Display double option
     {
-            cout << "[Double]";
-            doubleUp = true;
+        cout << "[Double]";
+        doubleUp = true;
     }
 
     if (splitCheck(playerHand) && playerBet * 2 <= chipStack) // Display split option
@@ -512,7 +512,7 @@ void displayChips(int chipStack)
 void placeBet(int& chipStack, int& playerBet)
 {
     bool validation = false;
-    while (!validation)
+    while (!validation) // Validation loop
     {
         cout << "Chips: " << chipStack << endl;
         displayChips(chipStack);
@@ -520,7 +520,7 @@ void placeBet(int& chipStack, int& playerBet)
         cin >> playerBet;
         cin.ignore(numeric_limits<streamsize>::max(), '\n');
 
-        if (cin.fail())
+        if (cin.fail()) // Account for characters
         {
             cin.clear();
             cin.ignore(numeric_limits<streamsize>::max(), '\n');
@@ -549,13 +549,13 @@ int chipsValidation()
     cout << endl;
 
     bool validation = false;
-    while (!validation)
+    while (!validation) // Validation loop
     {
         cout << "Enter starting chips (1000-5000): ";
         cin >> chipStack;
         cin.ignore(numeric_limits<streamsize>::max(), '\n');
 
-        if (cin.fail())
+        if (cin.fail()) // Account for characters
         {
             cin.clear();
             cin.ignore(numeric_limits<streamsize>::max(), '\n');
@@ -594,7 +594,7 @@ int sum(vector<string>& hand)
     for (int i = 0; i < hand.size(); i++)
     {
         sum += cardValue(hand[i]);
-        for (int j = 0; j < 4; j++) 
+        for (int j = 0; j < 4; j++)
         {
             if (hand[i] == cardDeck[j]) // Compare for aces
             {
@@ -709,7 +709,7 @@ void dealerCpu(vector<string>& dealerHand)
         return;
     }
 
-    while (sum(dealerHand) < 17)
+    while (sum(dealerHand) < 17) // Draw till 17
     {
         cardDraw(dealerHand);
     }
@@ -743,9 +743,9 @@ void playerCpu(vector<string>& playerHand)
 //******************************************************************
 bool splitCheck(vector<string>& hand)
 {
-    if (hand.size() == 2)
+    if (hand.size() == 2) // Checks for first turn
     {
-        if (cardValue(hand[0]) == cardValue(hand[1]))
+        if (cardValue(hand[0]) == cardValue(hand[1])) // Compares both cards
         {
             return true;
         }
