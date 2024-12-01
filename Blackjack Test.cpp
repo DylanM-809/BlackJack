@@ -1,3 +1,9 @@
+/**************************************
+Dylan Montoya, Skyler Lark, Rylan Willis
+Coding Project
+Date Completed: 12/1/2024
+Description: A simulation of the game blackjack
+****************************************/
 
 #include <iostream>
 #include <ctime>
