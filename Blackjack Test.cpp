@@ -200,7 +200,7 @@ void startGame() {
 //******************************************************************
 void gameInstructions() {
     cout << "Welcome to the game gamble.exe!\n";
-    cout << "1. This game is pretty much Blackjack with a few twists.\n";
+    cout << "1. This game is a simulation of the card game Blackjack.\n";
     cout << "2. The goal of this game is to get as close to 21 as possible without going over.\n";
     cout << "3. Aces are worth 1 or 11 points, face cards are worth 10 points, and all other cards are worth their face value.\n";
     cout << "4. On your turn, you can choose to \"Hit\" to draw a card, to \"Stand\" to stop drawing cards, \n";
